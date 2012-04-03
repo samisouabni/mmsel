@@ -1,0 +1,34 @@
+*==========================================================================*
+*                             mmsel.ado   (v2.0)                           *
+*--------------------------------------------------------------------------*
+*               Adapted for Sample Selection Correction by				   *
+*					 Sami Souabni (sami@souabni.com)					   *
+*		School of Business and Economics, Swansea University			   *
+*			who bears no responsibility for any errors. 				   *
+*					  Based on original code by   						   *
+*               Mark Bryan, ISER, University of Essex,					   *
+*			who bears no responsibility for any errors.                    *
+*--------------------------------------------------------------------------*
+*  Downloaded from GitHub												   *
+*--------------------------------------------------------------------------*
+*  Code to simulate (counterfactual) distributions from quantile           *
+*  regressions. Based on Machado and Mata (2005). An option to correct     *
+*  for sample selection has been added, using as adaptation of the         *
+*  procedure described in Albrecht et. al (2009). Multiple options		   *
+*  available for different references groups, following Oaxaca (1973),     *
+*  Blinder (1973) Oaxaca Ransom (1994) and Jann (2008).                    *
+*--------------------------------------------------------------------------*
+*  Requires pid variable							                       *
+*--------------------------------------------------------------------------*
+*  Creates directories: tmp, logs, results, data                           *
+*  Log file: results/`filename'(_sel).log								   *
+*  Graphs: results/`filename'(_sel).gph                                    *
+*  Other logs: logs/gaps                                                   *
+*--------------------------------------------------------------------------*
+*  Syntax:                                                                 *
+*  mmsel varlist(min=2) [if] [in] , GRoup(varname numeric) Reps(integer 200*
+*  )Filename(string) [pooled incgrp group1 Method(integer 2)               *
+*  ADJust(varname numeric) REDuced(var list numeric min=2) grponlysel       *
+* CONSTRaint(string)]								   					   *
+*                                                                          *
+*==========================================================================*
