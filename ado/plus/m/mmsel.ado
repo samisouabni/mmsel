@@ -9,7 +9,7 @@
 *               Mark Bryan, ISER, University of Essex,					   *
 *			who bears no responsibility for any errors.                    *
 *--------------------------------------------------------------------------*
-*  Downloaded from The Statistical Software Components (SSC) Archive	   *
+*  Downloaded from GitHub												   *
 *--------------------------------------------------------------------------*
 *  Code to simulate (counterfactual) distributions from quantile           *
 *  regressions. Based on Machado and Mata (2005). An option to correct     *
