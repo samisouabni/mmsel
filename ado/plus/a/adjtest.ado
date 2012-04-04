@@ -102,8 +102,6 @@ forval i = 1/99 {
 						}
 						scalar sel=1
 					}
-				}
-			}
 						if `method'==1{
 				matrix E=e(b)
 				quietly {
@@ -136,7 +134,6 @@ forval i = 1/99 {
 					}
 				}
 			}
-		}
 	
 		else {
 			if `"`2'"'=="p"{
@@ -186,10 +183,10 @@ forval i = 1/99 {
 					predict x`1'b`2' if `group'==0
 				}
 			}
-			
 		}
-		}
+	}
 
+		}
 		else {
 			if `"`adjust'"'!="" {
 				capture drop `lhs'_adj
@@ -274,7 +271,6 @@ forval i = 1/99 {
 						}
 						scalar sel=2
 					}
-				}
 			if `method'==1{
 				matrix E=e(b)
 				quietly {
@@ -357,10 +353,9 @@ forval i = 1/99 {
 					quietly: predict x`1'b`2' if `group'==0
 				}
 			}
-			
 		}
-		}
-	
+	}
+
 		preserve
 		quietly {
 		keep if x`1'b`2'~=. /* keep valid predictions */
@@ -381,5 +376,5 @@ forval i = 1/99 {
 		else {
 			drop x`1'b`2'
 		}
-}
+	}
 end
