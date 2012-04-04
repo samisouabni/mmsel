@@ -20,52 +20,6 @@ forval i = 1/99 {
 	local q = `i'/100 /* quantile to be estimated */
 		if `"`grponlysel'"'!="" {
 		if `"`adjust'"'!=""&`"`2'"'=="f" {
-			capture drop `lhs'_adj
-			if `"`2'"'=="p"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3, quantile(`q') nolog  
-			}
-			if `"`2'"'=="i"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 `group', quantile(`q') nolog 
-			}
-			if `"`2'"'=="g"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==1, quantile(`q') nolog 
-			}
-			if `"`2'"'=="f"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==0, quantile(`q') nolog 
-			}
-			if `"`2'"'=="m"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==1, quantile(`q') nolog 
-			}
-			matrix E=e(b)
-			scalar cons=_b[_cons]
-			scalar beta1=_b[`adjust']
-			scalar ps1=abs(_b[`adjust']/_se[`adjust'])
-			forval j = 2/3 { 
-				scalar beta`j'=_b[`adjust'`j']
-				scalar ps`j'=abs(_b[`adjust'`j']/_se[`adjust'`j'])
-			}
-			
-			cext `1' `2' 3
-			
-			if `method'==2&ps1>1.96&ps2>1.96&ps3>1.96{
-				ge `lhs'_adj=`lhs'-((cons-beta0)+beta1*`adjust'+beta2*`adjust'2+beta3*`adjust'3)
-				if `"`2'"'=="p"{
-					quietly: qreg `lhs'_adj `rhs', quantile(`q') nolog
-				}
-				if `"`2'"'=="i"{
-					quietly: qreg `lhs'_adj `rhs' `group', quantile(`q') nolog 
-				}
-				if `"`2'"'=="g"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-				}
-				if `"`2'"'=="f"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==0, quantile(`q') nolog 
-				}
-				if `"`2'"'=="m"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-				}
-			}
-			if ps1<1.96|ps2<1.96|ps3<1.96 {
 				capture drop `lhs'_adj
 				if `"`2'"'=="p"{
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2, quantile(`q') nolog  
@@ -111,48 +65,6 @@ forval i = 1/99 {
 					}
 				}
 				if ps1<1.96|ps2<1.96 {
-					capture drop `lhs'_adj
-					if `"`2'"'=="p"{
-						quietly: qreg `lhs' `rhs' `adjust', quantile(`q') nolog  
-					}
-					if `"`2'"'=="i"{
-						quietly: qreg `lhs' `rhs' `adjust' `group', quantile(`q') nolog 
-					}
-					if `"`2'"'=="g"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==1, quantile(`q') nolog 
-					} 
-					if `"`2'"'=="f"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==0, quantile(`q') nolog 
-					}
-					if `"`2'"'=="m"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==1, quantile(`q') nolog 
-					}
-					matrix E=e(b)
-					scalar cons=_b[_cons]
-					scalar beta1=_b[`adjust']
-					scalar ps1=abs(_b[`adjust']/_se[`adjust'])
-					
-					cext `1' `2' 1
-				
-					if `method'==2&ps1>1.96{
-						ge `lhs'_adj=`lhs'-((cons-beta0)+beta1*`adjust')
-						if `"`2'"'=="p"{
-							quietly: qreg `lhs'_adj `rhs', quantile(`q') nolog
-						}
-						if `"`2'"'=="i"{
-							quietly: qreg `lhs'_adj `rhs' `group', quantile(`q') nolog 
-						}
-						if `"`2'"'=="g"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-						}
-						if `"`2'"'=="f"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==0, quantile(`q') nolog 
-						}
-						if `"`2'"'=="m"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-						}
-					}
-					if ps1<1.96 {
 						capture drop `lhs'_adj
 						if `"`2'"'=="p"{
 							quietly: qreg `lhs' `rhs', quantile(`q') nolog  
@@ -180,7 +92,7 @@ forval i = 1/99 {
 						scalar sel=0
 					}
 					else {
-						if `method'==2&ps1>1.96{
+						if `method'==2&ps1>1.96&ps2>1.96{
 							if `"`1'"'=="m"{
 								predict x`1'b`2' if `group'==1
 							}
@@ -191,30 +103,8 @@ forval i = 1/99 {
 						scalar sel=1
 					}
 				}
-				else {
-					if `method'==2&ps1>1.96&ps2>1.96{
-						if `"`1'"'=="m"{
-								predict x`1'b`2' if `group'==1
-							}
-							else{
-								predict x`1'b`2' if `group'==0
-							}
-					}
-					scalar sel=2
-				}
 			}
-			else {
-				if `method'==2&ps1>1.96&ps2>1.96&ps3>1.96{
-					if `"`1'"'=="m"{
-						predict x`1'b`2' if `group'==1
-					}
-					else{
-						predict x`1'b`2' if `group'==0
-					}
-				}
-				scalar sel=3
-			}
-			if `method'==1{
+						if `method'==1{
 				matrix E=e(b)
 				quietly {
 					ge x`1'b`2'=0
@@ -302,66 +192,20 @@ forval i = 1/99 {
 
 		else {
 			if `"`adjust'"'!="" {
-			capture drop `lhs'_adj
-			if `"`2'"'=="p"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3, quantile(`q') nolog  
-			}
-			if `"`2'"'=="i"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 `group', quantile(`q') nolog 
-			}
-			if `"`2'"'=="g"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==1, quantile(`q') nolog 
-			}
-			if `"`2'"'=="f"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==0, quantile(`q') nolog 
-			}
-			if `"`2'"'=="m"{
-				quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `adjust'3 if `group'==1, quantile(`q') nolog 
-			}
-			matrix E=e(b)
-			scalar cons=_b[_cons]
-			scalar beta1=_b[`adjust']
-			scalar ps1=abs(_b[`adjust']/_se[`adjust'])
-			forval j = 2/3 { 
-				scalar beta`j'=_b[`adjust'`j']
-				scalar ps`j'=abs(_b[`adjust'`j']/_se[`adjust'`j'])
-			}
-			
-			cext `1' `2' 3
-			
-			if `method'==2&ps1>1.96&ps2>1.96&ps3>1.96{
-				ge `lhs'_adj=`lhs'-((cons-beta0)+beta1*`adjust'+beta2*`adjust'2+beta3*`adjust'3)
-				if `"`2'"'=="p"{
-					quietly: qreg `lhs'_adj `rhs', quantile(`q') nolog
-				}
-				if `"`2'"'=="i"{
-					quietly: qreg `lhs'_adj `rhs' `group', quantile(`q') nolog 
-				}
-				if `"`2'"'=="g"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-				}
-				if `"`2'"'=="f"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==0, quantile(`q') nolog 
-				}
-				if `"`2'"'=="m"{
-					quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-				}
-			}
-			if ps1<1.96|ps2<1.96|ps3<1.96 {
 				capture drop `lhs'_adj
-				if `"`2'"'=="p"{
+				if `"`2'"'=="p" {
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2, quantile(`q') nolog  
 				}
-				if `"`2'"'=="i"{
+				if `"`2'"'=="i" {
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2 `group', quantile(`q') nolog 
 				}
-				if `"`2'"'=="g"{
+				if `"`2'"'=="g" {
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2 if `group'==1, quantile(`q') nolog 
 				} 
-				if `"`2'"'=="f"{
+				if `"`2'"'=="f" {
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2 if `group'==0, quantile(`q') nolog 
 				}
-				if `"`2'"'=="m"{
+				if `"`2'"'=="m" {
 					quietly: qreg `lhs' `rhs' `adjust' `adjust'2 if `group'==1, quantile(`q') nolog 
 				}
 				matrix E=e(b)
@@ -393,62 +237,20 @@ forval i = 1/99 {
 					}
 				}
 				if ps1<1.96|ps2<1.96 {
-					capture drop `lhs'_adj
-					if `"`2'"'=="p"{
-						quietly: qreg `lhs' `rhs' `adjust', quantile(`q') nolog  
-					}
-					if `"`2'"'=="i"{
-						quietly: qreg `lhs' `rhs' `adjust' `group', quantile(`q') nolog 
-					}
-					if `"`2'"'=="g"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==1, quantile(`q') nolog 
-					} 
-					if `"`2'"'=="f"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==0, quantile(`q') nolog 
-					}
-					if `"`2'"'=="m"{
-						quietly: qreg `lhs' `rhs' `adjust' if `group'==1, quantile(`q') nolog 
-					}
-					matrix E=e(b)
-					scalar cons=_b[_cons]
-					scalar beta1=_b[`adjust']
-					scalar ps1=abs(_b[`adjust']/_se[`adjust'])
-					
-					cext `1' `2' 1
-				
-					if `method'==2&ps1>1.96{
-						ge `lhs'_adj=`lhs'-((cons-beta0)+beta1*`adjust')
-						if `"`2'"'=="p"{
-							quietly: qreg `lhs'_adj `rhs', quantile(`q') nolog
-						}
-						if `"`2'"'=="i"{
-							quietly: qreg `lhs'_adj `rhs' `group', quantile(`q') nolog 
-						}
-						if `"`2'"'=="g"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-						}
-						if `"`2'"'=="f"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==0, quantile(`q') nolog 
-						}
-						if `"`2'"'=="m"{
-							quietly: qreg `lhs'_adj `rhs' if `group'==1, quantile(`q') nolog 
-						}
-					}
-					if ps1<1.96 {
 						capture drop `lhs'_adj
-						if `"`2'"'=="p"{
+						if `"`2'"'=="p" {
 							quietly: qreg `lhs' `rhs', quantile(`q') nolog  
 						}
-						if `"`2'"'=="i"{
+						if `"`2'"'=="i" {
 							quietly: qreg `lhs' `rhs' `group', quantile(`q') nolog 
 						}
-						if `"`2'"'=="g"{
+						if `"`2'"'=="g" {
 							quietly: qreg `lhs' `rhs' if `group'==1, quantile(`q') nolog 
 						} 
-						if `"`2'"'=="f"{
+						if `"`2'"'=="f" {
 							quietly: qreg `lhs' `rhs' if `group'==0, quantile(`q') nolog 
 						}
-						if `"`2'"'=="m"{
+						if `"`2'"'=="m" {
 							quietly: qreg `lhs' `rhs' if `group'==1, quantile(`q') nolog 
 						}
 						if `method'==2{
@@ -462,7 +264,7 @@ forval i = 1/99 {
 						scalar sel=0
 					}
 					else {
-						if `method'==2&ps1>1.96{
+						if `method'==2&ps1>1.96&ps2>1.96{
 							if `"`1'"'=="m"{
 								quietly: predict x`1'b`2' if `group'==1
 							}
@@ -470,32 +272,9 @@ forval i = 1/99 {
 								quietly: predict x`1'b`2' if `group'==0
 							}
 						}
-						scalar sel=1
+						scalar sel=2
 					}
 				}
-				else {
-					if `method'==2&ps1>1.96&ps2>1.96{
-						if `"`1'"'=="m"{
-								quietly: predict x`1'b`2' if `group'==1
-							}
-							else{
-								quietly: predict x`1'b`2' if `group'==0
-							}
-					}
-					scalar sel=2
-				}
-			}
-			else {
-				if `method'==2&ps1>1.96&ps2>1.96&ps3>1.96{
-					if `"`1'"'=="m"{
-						quietly: predict x`1'b`2' if `group'==1
-					}
-					else{
-						quietly: predict x`1'b`2' if `group'==0
-					}
-				}
-				scalar sel=3
-			}
 			if `method'==1{
 				matrix E=e(b)
 				quietly {
